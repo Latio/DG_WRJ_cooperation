@@ -78,11 +78,13 @@ NdgPhysMat::NdgPhysMat() :frhs(NULL), ftime(259200), outputIntervalNum(1500), ti
 			obeindex.push_back(i);
 		}
 	}
+
 	//cout << obeindex.back() << endl;
 	//for (int j = 0; j < obeindex.size(); j++)
 	//{
 	//	cout << obeindex[j] << endl;
 	//}
+
 	ifstream data("TideElevation.txt");//read tidal data
 	if (!data.is_open())
 	{
@@ -125,13 +127,7 @@ void NdgPhysMat::matEvaluateSSPRK22()
 
 	while (time < ftime)
 	{
-
-		//for (int i = 0; i < 6; i++)
-		//{
-		//	std::cout << i << "  :  " << fphys[i] << std::endl;
-		//}
-
-		double dt = sweabstract2d.UpdateTimeInterval(fphys)*0.5;
+		double dt = UpdateTimeInterval(fphys)*0.5;
 		cout << dt << endl;
 		if (time + dt > ftime)
 		{
@@ -149,23 +145,11 @@ void NdgPhysMat::matEvaluateSSPRK22()
 			requestmemory(&frhs, Np, K, Nvar);
 			EvaluateRHS(fphys, frhs);
 
-			//fphys{ n }(:, : , obj.varFieldIndex) ...
-			//	= fphys{ n }(:, : , obj.varFieldIndex) + dt * obj.frhs{ n };
-			//const int num = (*Np)*(*K)*Nvar;
-			////const int dis1 = 1;
-			////const int dis2 = 1;
-			////const int alpha = 1;
-			//double *frhs_temp;
-			//requestmemory(&frhs_temp, Np, K, Nvar);
-			//cblas_dcopy(num, frhs, 1, frhs_temp, 1);
-			//cblas_dscal(num, dt, frhs_temp, 1);
-			//cblas_daxpy(num, 1, frhs_temp, 1, fphys, 1);
-			//freememory(&frhs_temp);
-
 			cblas_daxpy(num, dt, frhs, 1, fphys, 1);
 
 			matEvaluateLimiter(fphys);
-			sweconventional2d.EvaluatePostFunc(fphys);//Update status
+
+			EvaluatePostFunc(fphys);//Update status
 
 			freememory(&frhs);
 		}
@@ -175,8 +159,6 @@ void NdgPhysMat::matEvaluateSSPRK22()
 
 		time = time + dt;
 		UpdateOutputResult(time, fphys, Nvar);
-
-
 
 		double timeRatio = time / ftime;
 		std::cout << "____________________finished____________________: " << timeRatio << std::endl;
@@ -226,7 +208,6 @@ void NdgPhysMat::UpdateExternalField(double tloc, double *fphys)
 	}
 
 }
-
 
 
 void NdgPhysMat::UpdateOutputResult(double& time, double *fphys, int Nvar)

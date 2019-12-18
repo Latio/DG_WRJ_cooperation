@@ -8,7 +8,6 @@ class SWEPreBlanaced2d :
 public:
 	SWEPreBlanaced2d();
 	~SWEPreBlanaced2d();
-
 	void EvaluateFlux(double *fphys, double *E, double *G);
 	SWEPrebalanceVolumeFlux2d sweprebalancevolumeflux2d;
 

@@ -384,6 +384,9 @@
     <ClCompile Include="c_VertLimit2d.c">
       <Filter>源文件\Solver\SWEElevationLimiter2d\private</Filter>
     </ClCompile>
+    <ClCompile Include="c_UpdateWDWetDryState.c">
+      <Filter>源文件\SWEConventional2d\private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeshUnion.h">

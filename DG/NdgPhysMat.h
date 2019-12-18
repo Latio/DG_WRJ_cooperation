@@ -9,7 +9,7 @@
 extern "C" {
 
 }
-class NdgPhysMat
+class NdgPhysMat :public SWEPreBlanaced2d
 {
 public:
 	NdgPhysMat();

@@ -29,6 +29,7 @@ void SWEConventional2d::EvaluatePostFunc(double *fphys)
 	double *fphys1 = fphys;
 	mesh.GetMeshAverageValue(fphys1, hc);
 
+
 	double *fphys2 = fphys + dis;
 	mesh.GetMeshAverageValue(fphys2, qxc);
 
@@ -41,7 +42,7 @@ void SWEConventional2d::EvaluatePostFunc(double *fphys)
 	freememory(&qxc);
 	freememory(&qyc);
 
-	UpdateWetDryState(fphys);
+	pre_UpdateWetDryState(fphys);
 
 }
 
@@ -81,4 +82,13 @@ void SWEConventional2d::UpdateWetDryState(double *fphys)
 
 
 	delete[] wetflag;
+};
+
+void SWEConventional2d::pre_UpdateWetDryState(double *fphys)
+{
+	int *K = meshunion->K;
+	int *Np = meshunion->cell_p->Np;
+	signed char *status = meshunion->status;
+
+	c_UpdateWDWetDryState(hmin, fphys, status, Np, K, Nfield);
 };

@@ -46,7 +46,7 @@ double SWEAbstract2d::UpdateTimeInterval(double *fphys)
 
 	double dtm = c_UpdateTimeInterval2d(hmin, gra, N, dx, status, fphys, Np, K, Nfield);
 
-	//std::cout << dtm << std::endl;
+	std::cout << dtm << std::endl;
 
 
 

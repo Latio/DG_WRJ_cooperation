@@ -16,9 +16,6 @@ extern "C" {
 class SWEAbstract2d
 {
 
-
-
-
 public:
 
 	const double gra;
