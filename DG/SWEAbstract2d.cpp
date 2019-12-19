@@ -35,23 +35,16 @@ void SWEAbstract2d::EvaluateSurfNumFlux(double *nx, double *ny, double *fm, doub
 
 //计算时间步长
 double SWEAbstract2d::UpdateTimeInterval(double *fphys)
-{
-
-
+{ 
 	double dt = 1e1;
-	const int N = *meshunion->cell_p->N;
+	int N = *meshunion->cell_p->N;
 	signed char *status = meshunion->status;
 	int *Np = meshunion->cell_p->Np;
 	int *K = meshunion->K;
 
 	double dtm = c_UpdateTimeInterval2d(hmin, gra, N, dx, status, fphys, Np, K, Nfield);
 
-	std::cout << dtm << std::endl;
-
-
-
-	if (dtm > 0)
-	{
+	if (dtm > 0){
 		dt = (dt < dtm*cfl) ? dt : dtm * cfl;
 	}
 

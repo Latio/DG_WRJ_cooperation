@@ -1,10 +1,11 @@
 #pragma once
 #include"NdgQuadFreeStrongFormAdvSolver2d.h"
 #include"AbstractOutputFile.h"
-#include<vector>
-//#include<algorithm>
+//#include<vector>
 #include<fstream>
-#include<iomanip>
+//#include<iomanip>
+//#include<algorithm>
+#include<time.h>
 
 extern "C" {
 
@@ -17,10 +18,12 @@ public:
 
 	void matSolver();
 	void matEvaluateSSPRK22();
+
 	void UpdateExternalField(double tloc, double *fphys);
+
 	void EvaluateRHS(double *fphys, double *frhs);
 	void UpdateOutputResult(double& time, double *fphys, int Nvar);
-	void matEvaluateLimiter(double *fphys);
+	void EvaluateLimiter(double *fphys);
 	//double* EvaluatePostFunc(double *fphys);
 	//double UpdateTimeInterval(double *fphys);
 	//void EvaluateSourceTerm(double *fphys);
@@ -43,7 +46,7 @@ protected:
 
 	double *frhs;
 	double *fext;
-	double *fphys0;
+	//double *fphys0;
 	double *fphys;
 	double *zGrad;
 	std::vector<double> tidal;
@@ -51,15 +54,17 @@ protected:
 
 	double tidalinterval;
 
-	double ftime;
+	//double ftime;
 	int outputIntervalNum;
 	int *Np;
 	int *K;
-	int Nfield;
+	//int Nfield;
 	int *Nv;
-	int Nvar;
+	//int Nvar;
 	int *boundarydge_Nfp;
 	int *boundarydge_Ne;
+
+	double startTime, finalTime;
 	//double gra;
 	//double hmin;
 	//int Np;// dimension 

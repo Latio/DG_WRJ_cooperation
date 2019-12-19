@@ -168,6 +168,7 @@ void SWEElevationLimiter2d::apply(double *fphys)
 	out << "************************************************\n";
 
 	matLimit(fphys, 3);
+
 	freememory(&ind);
 };
 

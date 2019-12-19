@@ -278,11 +278,11 @@ void c_VertLimit2d(double *fphys_, double *x_, double *y_, double *xc_, double *
 			//     mexPrintf("k=%d, fm=%f, gfx=%f, gfy=%f\n", k, fm, gfx, gfy);
 
 		}
-		else {
-			for (int n = 0; n < Np; n++) {
-				flimit[k * Np + n] = fvar[k * Np + n];
-			}
-		}
+		//else {
+		//	for (int n = 0; n < Np; n++) {
+		//		flimit[k * Np + n] = fvar[k * Np + n];
+		//	}
+		//}
 
 		myfree(&cellvf);
 		myfree(&cellvx);

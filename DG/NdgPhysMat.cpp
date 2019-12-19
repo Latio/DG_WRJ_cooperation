@@ -5,18 +5,22 @@ using namespace std;
 using namespace netCDF;
 using namespace netCDF::exceptions;
 
-NdgPhysMat::NdgPhysMat() :frhs(NULL), ftime(259200), outputIntervalNum(1500), tidalinterval(600)/*潮流数据间隔*/, abstractoutputfile("..//..//20191208.nc", 259200.0 / 1500.0, 1500)
+NdgPhysMat::NdgPhysMat() :frhs(NULL),
+startTime(0),
+finalTime(259200),
+outputIntervalNum(1500),
+tidalinterval(600)/*潮流数据间隔*/,
+abstractoutputfile("..//..//20191208.nc", 259200.0 / 1500.0, 1500)
 {
 	Np = meshunion->cell_p->Np;
 	K = meshunion->K;
 	boundarydge_Nfp = meshunion->boundarydge_p->Nfp;
 	boundarydge_Ne = meshunion->boundarydge_p->Ne;
-	Nfield = meshunion->Nfield;
-	Nvar = 3;
+	//Nfield = meshunion->Nfield;
+	//Nvar = 3;
 
 	requestmemory(&fphys, Np, K, Nfield);
-	requestmemory(&fphys0, Np, K, Nfield);
-	requestmemory(&fext, boundarydge_Nfp, boundarydge_Ne, 4);
+	requestmemory(&fext, boundarydge_Nfp, boundarydge_Ne, Nfield);
 	requestmemory(&zGrad, Np, K, 2);
 
 	netCDF::NcFile dataFile("init_fphys.nc", netCDF::NcFile::read);
@@ -79,16 +83,10 @@ NdgPhysMat::NdgPhysMat() :frhs(NULL), ftime(259200), outputIntervalNum(1500), ti
 		}
 	}
 
-	//cout << obeindex.back() << endl;
-	//for (int j = 0; j < obeindex.size(); j++)
-	//{
-	//	cout << obeindex[j] << endl;
-	//}
-
 	ifstream data("TideElevation.txt");//read tidal data
 	if (!data.is_open())
 	{
-		cout << "Error File Path !!!" << endl;
+		std::cout << "Error File Path !!!" << std::endl;
 		system("pause");
 	}
 	double point_tidal;
@@ -102,7 +100,6 @@ NdgPhysMat::NdgPhysMat() :frhs(NULL), ftime(259200), outputIntervalNum(1500), ti
 NdgPhysMat::~NdgPhysMat()
 {
 	freememory(&fphys);
-	freememory(&fphys0);
 	freememory(&fext);
 	freememory(&zGrad);
 
@@ -118,26 +115,39 @@ void NdgPhysMat::matSolver()
 
 void NdgPhysMat::matEvaluateSSPRK22()
 {
+	clock_t begintime, endtime;
+	begintime = clock();
 
-	double time = 0;
 	const int num = (*K)*(*Np)*Nvar;
-	//double outputTimeInterval = ftime / outputIntervalNum;
+
+	double time = startTime;
+	double ftime = finalTime;
+
+	double *fphys0;
+	requestmemory(&fphys0, Np, K, Nvar);
 
 	abstractoutputfile.ncFile_create(Np, K, Nvar);
 
+
+	//ofstream out("D:\\Desktop\\input.txt");
+	//if (!out)
+	//{
+	//	cerr << "open error!" << endl;
+	//}
+
 	while (time < ftime)
 	{
-		double dt = UpdateTimeInterval(fphys)*0.5;
-		cout << dt << endl;
-		if (time + dt > ftime)
-		{
+		double dt = UpdateTimeInterval(fphys)*0.4;
+		if (time + dt > ftime) {
 			dt = ftime - time;
 		}
 
-		cblas_dcopy(num, fphys, 1, fphys0, 1);//fphys0{n} = fphys{n};
 
-		for (int intRK = 0; intRK < 2; intRK++)
-		{
+		
+
+		cblas_dcopy(num, fphys, 1, fphys0, 1);
+
+		for (int intRK = 0; intRK < 2; intRK++) {
 
 			double tloc = time + dt;
 			UpdateExternalField(tloc, fphys);
@@ -147,7 +157,7 @@ void NdgPhysMat::matEvaluateSSPRK22()
 
 			cblas_daxpy(num, dt, frhs, 1, fphys, 1);
 
-			matEvaluateLimiter(fphys);
+			EvaluateLimiter(fphys);
 
 			EvaluatePostFunc(fphys);//Update status
 
@@ -160,10 +170,28 @@ void NdgPhysMat::matEvaluateSSPRK22()
 		time = time + dt;
 		UpdateOutputResult(time, fphys, Nvar);
 
+		//for (size_t i = 0; i < *K; i++)
+		//{
+		//	out << i + 1;
+		//	for (int j = 0; j < *Np; j++)
+		//	{
+		//		out << "    " << fphys[(*Np)*(*K) + i * (*Np) + j];
+		//	}
+		//	out << "\n";
+		//}
+
+		//out << "************************************************\n";
+
 		double timeRatio = time / ftime;
 		std::cout << "____________________finished____________________: " << timeRatio << std::endl;
 	}
 
+
+
+	endtime = clock();
+	std::cout << "\n\nRunning Time : " << endtime - begintime << " ms\n" << endl;
+
+	freememory(&fphys0);
 }
 
 
@@ -178,29 +206,26 @@ void NdgPhysMat::EvaluateRHS(double *fphys, double *frhs)
 //void NdgPhysMat::UpdateOutputResult(double time, double *fphys) {};
 void NdgPhysMat::UpdateExternalField(double tloc, double *fphys)
 {
-	double delta = tidalinterval;
-
-	int s1 = ceil(tloc / delta);//double s1 = floor(tloc / delta) + 1;
-	int s2 = s1 + 1;
-	double alpha1 = (delta*s1 - tloc) / delta;
-	double alpha2 = (tloc - delta * (s1 - 1)) / delta;
-
-	vector<double> fnT;
 	const int benfp = *meshunion->boundarydge_p->Nfp;
 	const int bene = *meshunion->boundarydge_p->Ne;
-	const int np = *meshunion->cell_p->Np;
-	const int k = *meshunion->K;
-	const int dis = k * np * 3;
-	const int num = benfp * obeindex.size();
-	for (int i = 0; i < num; i++)
-	{
-		double temp = tidal[(s1 - 1)*num + i] * alpha1 + tidal[s1*num + i] * alpha2;
+	const int obnum = benfp * obeindex.size();
+
+	const double delta = tidalinterval;
+
+	const int s1 = ceil(tloc / delta);//double s1 = floor(tloc / delta) + 1;
+	//const int s2 = s1 + 1;
+	const double alpha1 = (delta*s1 - tloc) / delta;
+	double alpha2 = (tloc - delta * (s1 - 1)) / delta;
+
+	std::vector<double> fnT;
+
+	for (int i = 0; i < obnum; i++) {
+		double temp = tidal[(s1 - 1)*obnum + i] * alpha1 + tidal[s1*obnum + i] * alpha2;
 		fnT.push_back(temp);
 	}
 
 	double *fext_4 = fext + 3 * benfp * bene;
-	for (int i = 0; i < obeindex.size(); i++)
-	{
+	for (int i = 0; i < obeindex.size(); i++) {
 		for (int j = 0; j < benfp; j++)
 		{
 			fext[obeindex[i] * benfp + j] = max(fnT[i*benfp + j] - fext_4[obeindex[i] * benfp + j], 0);
@@ -215,7 +240,7 @@ void NdgPhysMat::UpdateOutputResult(double& time, double *fphys, int Nvar)
 	abstractoutputfile.outputIntervalResult(time, fphys, Nvar, Np, K);
 };
 
-void NdgPhysMat::matEvaluateLimiter(double *fphys)
+void NdgPhysMat::EvaluateLimiter(double *fphys)
 {
 	sweabstract2d.sweelevationlimiter2d.apply(fphys);
 };

@@ -55,23 +55,19 @@ void AbstractOutputFile::outputResult(double time, double *field, int Nvar, int 
 
 void AbstractOutputFile::ncFile_create(int *Np, int *K, int Nvar)
 {
-
 	NcDim dimNp = resultFile.addDim("Np", *Np);
 	NcDim dimK = resultFile.addDim("K", *K);
 	NcDim dimNfield = resultFile.addDim("Nvar", Nvar);
 	NcDim dimtime = resultFile.addDim("Nt", NC_UNLIMITED);
+
+	std::vector<NcDim> dims_time;
+	dims_time.push_back(dimtime);
 
 	std::vector<NcDim> dims_fphys;
 	dims_fphys.push_back(dimtime);
 	dims_fphys.push_back(dimNfield);
 	dims_fphys.push_back(dimK);
 	dims_fphys.push_back(dimNp);
-
-
-
-
-	std::vector<NcDim> dims_time;
-	dims_time.push_back(dimtime);
 
 	output_time = resultFile.addVar("time", NC_DOUBLE, dims_time);
 	output_fphys = resultFile.addVar("fphys", NC_DOUBLE, dims_fphys);
