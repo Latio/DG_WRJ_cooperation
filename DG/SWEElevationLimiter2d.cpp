@@ -153,19 +153,19 @@ void SWEElevationLimiter2d::apply(double *fphys)
 
 	matLimit(fphys, 2);
 
-	std::ofstream out("D:\\Desktop\\input.txt");
-	if (!out)
-	{
-		std::cerr << "open error!" << std::endl;
-	}
+	//std::ofstream out("D:\\Desktop\\input.txt");
+	//if (!out)
+	//{
+	//	std::cerr << "open error!" << std::endl;
+	//}
 
-	for (int j = 0; j < (*K)*(*Np) * 4; j++)
-	{
-		out << "    " << fphys[j] << "\n";
-	}
-	out << "\n";
+	//for (int j = 0; j < (*K)*(*Np) * 4; j++)
+	//{
+	//	out << "    " << fphys[j] << "\n";
+	//}
+	//out << "\n";
 
-	out << "************************************************\n";
+	//out << "************************************************\n";
 
 	matLimit(fphys, 3);
 	freememory(&ind);

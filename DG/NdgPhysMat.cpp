@@ -138,12 +138,13 @@ void NdgPhysMat::matEvaluateSSPRK22()
 	while (time < ftime)
 	{
 		double dt = UpdateTimeInterval(fphys)*0.4;
+		cout << dt << endl;
 		if (time + dt > ftime) {
 			dt = ftime - time;
 		}
 
 
-		
+
 
 		cblas_dcopy(num, fphys, 1, fphys0, 1);
 
