@@ -8,9 +8,9 @@ using namespace netCDF::exceptions;
 NdgPhysMat::NdgPhysMat() :frhs(NULL),
 startTime(0),
 finalTime(259200),
-outputIntervalNum(1500),
+outputIntervalNum(500),
 tidalinterval(600)/*潮流数据间隔*/,
-abstractoutputfile("..//..//20191208.nc", 259200.0 / 1500.0, 1500)
+abstractoutputfile("..//..//20191208.nc", 259200.0 / 500.0, 500)
 {
 	Np = meshunion->cell_p->Np;
 	K = meshunion->K;
@@ -92,6 +92,8 @@ abstractoutputfile("..//..//20191208.nc", 259200.0 / 1500.0, 1500)
 	double point_tidal;
 	while (data >> point_tidal)
 		tidal.push_back(point_tidal);
+
+
 	data.close();
 
 }
@@ -128,13 +130,6 @@ void NdgPhysMat::matEvaluateSSPRK22()
 
 	abstractoutputfile.ncFile_create(Np, K, Nvar);
 
-
-	//ofstream out("D:\\Desktop\\input.txt");
-	//if (!out)
-	//{
-	//	cerr << "open error!" << endl;
-	//}
-
 	while (time < ftime)
 	{
 		double dt = UpdateTimeInterval(fphys)*0.4;
@@ -142,9 +137,6 @@ void NdgPhysMat::matEvaluateSSPRK22()
 		if (time + dt > ftime) {
 			dt = ftime - time;
 		}
-
-
-
 
 		cblas_dcopy(num, fphys, 1, fphys0, 1);
 
@@ -158,9 +150,30 @@ void NdgPhysMat::matEvaluateSSPRK22()
 
 			cblas_daxpy(num, dt, frhs, 1, fphys, 1);
 
+
 			EvaluateLimiter(fphys);
 
+			std::ofstream out("D:\\Desktop\\input.txt");
+			if (!out)
+			{
+				std::cerr << "open error!" << std::endl;
+			}
+
+			for (int j = 0; j < 433; j++) {
+
+				out << j + 1;
+				for (size_t i = 0; i < 100; i++)
+				{
+					out << "    " << tidal[j * 100 + i] << "\n";
+				}
+				out << "\n";
+
+			}
+			cout << "************************************************\n";
+
 			EvaluatePostFunc(fphys);//Update status
+
+
 
 			freememory(&frhs);
 		}
@@ -171,23 +184,10 @@ void NdgPhysMat::matEvaluateSSPRK22()
 		time = time + dt;
 		UpdateOutputResult(time, fphys, Nvar);
 
-		//for (size_t i = 0; i < *K; i++)
-		//{
-		//	out << i + 1;
-		//	for (int j = 0; j < *Np; j++)
-		//	{
-		//		out << "    " << fphys[(*Np)*(*K) + i * (*Np) + j];
-		//	}
-		//	out << "\n";
-		//}
-
-		//out << "************************************************\n";
 
 		double timeRatio = time / ftime;
 		std::cout << "____________________finished____________________: " << timeRatio << std::endl;
 	}
-
-
 
 	endtime = clock();
 	std::cout << "\n\nRunning Time : " << endtime - begintime << " ms\n" << endl;
@@ -201,8 +201,6 @@ void NdgPhysMat::EvaluateRHS(double *fphys, double *frhs)
 	ndgquadfreestrongformadvsolver2d.evaluateAdvectionRHS(fphys, frhs, fext);
 	sweabstract2d.EvaluateSourceTerm(fphys, frhs, zGrad);
 };
-
-
 
 //void NdgPhysMat::UpdateOutputResult(double time, double *fphys) {};
 void NdgPhysMat::UpdateExternalField(double tloc, double *fphys)
@@ -232,7 +230,6 @@ void NdgPhysMat::UpdateExternalField(double tloc, double *fphys)
 			fext[obeindex[i] * benfp + j] = max(fnT[i*benfp + j] - fext_4[obeindex[i] * benfp + j], 0);
 		}
 	}
-
 }
 
 

@@ -111,16 +111,11 @@ void SWEElevationLimiter2d::apply(double *fphys)
 	cblas_dcopy(num, fphys_1, 1, fphys_5, 1);
 	cblas_daxpy(num, 1, fphys_4, 1, fphys_5, 1);
 
+
+
 	matLimit(fphys, 5);
 
-	//for (size_t i = 0; i < 4; i++)
-	//{
-	//	for (size_t j = 0; j < num; j++)
-	//	{
-	//		std::cout << i * num + j + 1 << "  : " << fphys[i*num + j] << std::endl;
-	//	}
 
-	//}
 
 	bool *ind;
 	requestmemory(&ind, K);
@@ -135,37 +130,30 @@ void SWEElevationLimiter2d::apply(double *fphys)
 		}
 	}
 
-	//for (size_t i = 0; i < *K; i++)
-	//{
-	//	std::cout << i << " £º " << ind[i] << std::endl;
-	//}
-
 	for (int i = 0; i < (*K); i++)
 	{
-		if (ind[i] = true) {
+		if (ind[i] == true)
+		{
 			for (int j = 0; j < (*Np); j++)
 			{
 				fphys_1[i*(*Np) + j] = fphys_5[i*(*Np) + j] - fphys_4[i*(*Np) + j];
 			}
 		}
 	}
+	//for (size_t j = 0; j < num; j++)
+	//{
+	//	std::cout << j + 1 << "  : " << fphys_1[j] << std::endl;
+	//}
+
+	//for (size_t i = 0; i < 4; i++)
+	//{
+
+
+	//}
 
 
 	matLimit(fphys, 2);
 
-	//std::ofstream out("D:\\Desktop\\input.txt");
-	//if (!out)
-	//{
-	//	std::cerr << "open error!" << std::endl;
-	//}
-
-	//for (int j = 0; j < (*K)*(*Np) * 4; j++)
-	//{
-	//	out << "    " << fphys[j] << "\n";
-	//}
-	//out << "\n";
-
-	//out << "************************************************\n";
 
 	matLimit(fphys, 3);
 	freememory(&ind);

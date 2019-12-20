@@ -18,7 +18,7 @@ void myfree(double **arr) {
 	};
 }
 
-void c_inner_EvaluateStrongFromEdgeRHS(double *invM_, double *M_, double *FToE_, double *FToN1_, double *FToN2_, double *Js_, double *J_, double *fluxM_, double *fluxP_, double *fluxS_, double *frhs_, const int *Np_, int *K_, int *Nfp_, int *Ne_, int Nfield_)
+void c_inner_EvaluateStrongFromEdgeRHS(double *invM_, double *M_, double *FToE_, double *FToN1_, double *FToN2_, double *Js_, double *J_, double *fluxM__, double *fluxP__, double *fluxS__, double *frhs_, const int *Np_, int *K_, int *Nfp_, int *Ne_, int Nfield_)
 {
 	const double *invM = invM_;
 	double *Mb = M_;
@@ -27,16 +27,16 @@ void c_inner_EvaluateStrongFromEdgeRHS(double *invM_, double *M_, double *FToE_,
 	double *FToN2 = FToN2_;
 	double *Js = Js_;
 	double *J = J_;
-	double *fluxM = fluxM_;
-	double *fluxP = fluxP_;
-	double *fluxS = fluxS_;
+	double *fluxM = fluxM__;
+	double *fluxP = fluxP__;
+	double *fluxS = fluxS__;
 
 	const int Np = *Np_;  // num of interp nodes
 	const int K = *K_;   // num of elements
 
 	const int Nfp = *Nfp_;
 	const int Ne = *Ne_;  // num of edges
-	int Nfield= Nfield_;
+	int Nfield = Nfield_;
 
 	//if (Nfield_ > 2) {
 	//	Nfield = Nfield_;
@@ -61,9 +61,9 @@ void c_inner_EvaluateStrongFromEdgeRHS(double *invM_, double *M_, double *FToE_,
 #endif
 	for (int fld = 0; fld < Nfield; fld++) {
 		double *rhs = frhs + Np * K * fld;
-		double *fluxM__ = fluxM + Nfp * Ne * fld;
-		double *fluxP__ = fluxP + Nfp * Ne * fld;
-		double *fluxS__ = fluxS + Nfp * Ne * fld;
+		double *fluxM_ = fluxM + Nfp * Ne * fld;
+		double *fluxP_ = fluxP + Nfp * Ne * fld;
+		double *fluxS_ = fluxS + Nfp * Ne * fld;
 
 		for (int k = 0; k < Ne; k++) {  // evaluate rhs on each edge
 			const int e1 = (int)FToE[2 * k] - 1;
@@ -75,7 +75,7 @@ void c_inner_EvaluateStrongFromEdgeRHS(double *invM_, double *M_, double *FToE_,
 
 			double *rhsM = (double*)malloc(sizeof(double)*Nfp);
 			double *rhsP = (double*)malloc(sizeof(double)*Nfp);
-			//double rhsM[Nfp], rhsP[Nfp];
+
 			for (int n = 0; n < Nfp; n++) {
 				rhsM[n] = 0;
 				rhsP[n] = 0;
@@ -83,8 +83,8 @@ void c_inner_EvaluateStrongFromEdgeRHS(double *invM_, double *M_, double *FToE_,
 
 			for (int n = 0; n < Nfp; n++) {
 				const int sk = n + ind;
-				double dfM = fluxM__[sk] - fluxS__[sk];
-				double dfP = fluxP__[sk] - fluxS__[sk];
+				double dfM = fluxM_[sk] - fluxS_[sk];
+				double dfP = fluxP_[sk] - fluxS_[sk];
 				double j = Js[sk];
 
 				double *mb = Mb + n * Nfp;
@@ -94,7 +94,6 @@ void c_inner_EvaluateStrongFromEdgeRHS(double *invM_, double *M_, double *FToE_,
 					rhsP[m] -= mb[m] * j * dfP;
 				}
 			}
-
 			for (int n = 0; n < Nfp; n++) {
 				const int sk = n + ind;
 				const int m1 = (int)FToN1[sk] + ind1;
@@ -105,11 +104,8 @@ void c_inner_EvaluateStrongFromEdgeRHS(double *invM_, double *M_, double *FToE_,
 
 			myfree(&rhsM);
 			myfree(&rhsP);
-
-
 		}
 
-		//double temp[Np]; 
 		double *temp = (double*)malloc(sizeof(double)*Np);
 		for (int k = 0; k < K; k++) {
 			double *rhs_ = rhs + k * Np;
@@ -130,8 +126,6 @@ void c_inner_EvaluateStrongFromEdgeRHS(double *invM_, double *M_, double *FToE_,
 			//cblas_dgemm(chn, chn, &np, &oneI, &np, &one, invM, &np, rhs_, &np, &zero, temp, &np);
 			cblas_dgemm(Order, TransA, TransB, M, N, K, alpha, invM, lda, rhs_, ldb, beta, temp, ldc);
 
-			//printf("c_inner_EvaluateStrongFromEdgeRHS.c\n");
-			// copy rhs
 			for (int n = 0; n < Np; n++) {
 				rhs_[n] = temp[n] / j[n];
 			}

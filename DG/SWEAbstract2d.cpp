@@ -60,7 +60,7 @@ void SWEAbstract2d::ImposeBoundaryCondition(double *nx, double *ny, double *fm, 
 
 	c_ImposeBoundaryCondition(gra, nx, ny, fp, fext, ftype, Nfp, Ne, Nfield);
 	//fP(:,:,6) = fM(:,:,6);
-	int dis = (*Nfp)*(*Ne);
+	const int dis = (*Nfp)*(*Ne);
 	double *fp_6 = fp + dis * 5;
 	double *fm_6 = fm + dis * 5;
 	cblas_dcopy(dis, fm_6, 1, fp_6, 1);

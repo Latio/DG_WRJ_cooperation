@@ -16,7 +16,7 @@ void myfree(double **arr);
 //#define NRHS 8
 //#define NLHS 1
 
-void c_boundary_EvaluateStrongFormEdgeRHS(double *invM_, double *M_, double *FToE_, double *FToN1_, double *Js_, double *J_, double *fluxM__, double *fluxS__, int *Np_, int *K_, int *Nfp_, int *Ne_, int Nfield_,double *const frhs_temp_)
+void c_boundary_EvaluateStrongFormEdgeRHS(double *invM_, double *M_, double *FToE_, double *FToN1_, double *Js_, double *J_, double *fluxM__, double *fluxS__, int *Np_, int *K_, int *Nfp_, int *Ne_, int Nfield_, double *const frhs_temp_)
 {
 
 	//void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
@@ -46,7 +46,7 @@ void c_boundary_EvaluateStrongFormEdgeRHS(double *invM_, double *M_, double *FTo
 	//const mwSize *dims = mxGetDimensions(prhs[6]);
 	const int Nfp = *Nfp_;
 	const int Ne = *Ne_;  // num of edges
-	int Nfield = Nfield_;
+	int Nfield = 1;
 
 	//if (mxGetNumberOfDimensions(prhs[6]) > 2) {
 	//	Nfield = dims[2];
@@ -76,7 +76,7 @@ void c_boundary_EvaluateStrongFormEdgeRHS(double *invM_, double *M_, double *FTo
 		double *fluxS_ = fluxS + Nfp * Ne * fld;
 
 		double *rhsM = (double*)malloc(sizeof(double)*Nfp);
-		
+
 		for (int k = 0; k < Ne; k++) {  // evaluate rhs on each edge
 			const int e1 = (int)FToE[2 * k] - 1;
 			// const int e2 = (int)FToE[2 * k + 1] - 1;
@@ -149,8 +149,6 @@ void c_boundary_EvaluateStrongFormEdgeRHS(double *invM_, double *M_, double *FTo
 				rhs_[n] = temp[n] / j[n];
 			}
 
-			
-			
 		}
 		myfree(&temp);
 		myfree(&rhsM);

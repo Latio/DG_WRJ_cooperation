@@ -11,6 +11,6 @@ class SWEPrebalanceVolumeFlux2d
 public:
 	SWEPrebalanceVolumeFlux2d();
 	~SWEPrebalanceVolumeFlux2d();
-	void evaluate(double hmin, double gra, signed char *status, double *fphys, double *E, double *G);
+	void evaluate(double hmin, double gra, double *fphys, double *E, double *G);
 };
 

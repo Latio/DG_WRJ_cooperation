@@ -42,5 +42,4 @@ void c_EvaluateSourceTopography2d(double gra_, signed char *status_, double *fph
 	}
 
 	return;
-
-};
+}
