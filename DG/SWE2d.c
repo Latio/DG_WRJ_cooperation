@@ -56,7 +56,7 @@ void evaluateFlowRateByDeptheThreshold(
 	return;
 }
 
-/* Evaluate whether the cell adjacent to a given cell is dry*/
+///* Evaluate whether the cell adjacent to a given cell is dry*/
 //void evaluateWetDryInterface(
 //	signed char *status,
 //	const double *FToE,

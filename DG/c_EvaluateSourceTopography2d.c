@@ -9,7 +9,7 @@ void c_EvaluateSourceTopography2d(double gra_, signed char *status_, double *fph
 {
 
 	double gra = gra_;
-	signed char* regType = (signed char*)status_;
+	signed char* regType = status_;
 	// double* fphys = mxGetPr(prhs[2]);
 	double* zgrad = zGrad_;
 
@@ -28,10 +28,12 @@ void c_EvaluateSourceTopography2d(double gra_, signed char *status_, double *fph
 #endif
 	for (int k = 0; k < K; k++) {
 		NdgRegionType type = (NdgRegionType)regType[k];
-		if (type == NdgRegionDry)
+		if (type == NdgRegionDry) {
 			continue;
-		if (type == NdgRegionPartialWetFlood)
+		}
+		if (type == NdgRegionPartialWetFlood) {
 			continue;
+		}
 
 		for (int n = 0; n < Np; n++) {
 			int sk = k * Np + n;

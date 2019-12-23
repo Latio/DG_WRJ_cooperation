@@ -5,6 +5,7 @@
 #include"SWEPrebalanceVolumeFlux2d.h"
 #include"SWETopographySourceTerm2d.h"
 #include"SWEElevationLimiter2d.h"
+#include"FrictionTermSolver.h"
 
 extern "C" {
 	//void surfluxSolver_evaluate(double hmin_, double gra_, double *nx_, double *ny_, MeshUnion *mesh_, InnerEdge *edge_);//(hmin, gra, nx, ny, fm, mesh, edge)
@@ -22,16 +23,16 @@ public:
 	const double hmin;
 	const double cfl;
 	const int Nfield;
-	const double Nvar;
+	const int Nvar;
 	double *dx;
 
 	enum enumSWERegion {
 		Sponge = 3, // % sponge cell
-		Wet,		//well cell(SWE)
-		Dry,		//dry cell(SWE)
-		PartialWet,
-		PartialWetFlood,
-		PartialWetDamBreak
+		Wet = 4,		//well cell(SWE)
+		Dry = 5,		//dry cell(SWE)
+		PartialWet = 6,
+		PartialWetFlood = 7,
+		PartialWetDamBreak = 8
 	} enumsweregion;
 
 
@@ -49,6 +50,8 @@ public:
 	SWEHLLNumFluxSolver2d swehllnumfluxsolver2d;
 	SWEPrebalanceVolumeFlux2d sweprebalancevolumeflux2d;
 	SWETopographySourceTerm2d swetopographysourceterm2d;
+	FrictionTermSolver frictiontermsolver2d;
+
 	SWEElevationLimiter2d sweelevationlimiter2d;
 };
 

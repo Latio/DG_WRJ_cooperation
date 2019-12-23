@@ -38,11 +38,13 @@ void SWEConventional2d::EvaluatePostFunc(double *fphys)
 
 	c_EvaluatePostFunc2d(hmin, fphys, hc, qxc, qyc, K, Np);
 
+	pre_UpdateWetDryState(fphys);
+
 	freememory(&hc);
 	freememory(&qxc);
 	freememory(&qyc);
 
-	pre_UpdateWetDryState(fphys);
+	
 
 }
 

@@ -29,10 +29,12 @@ abstractoutputfile("..//..//20191208.nc", 259200.0 / 500.0, 500)
 	netCDF::NcVar zGrad_v = dataFile.getVar("zGrad");
 	zGrad_v.getVar(zGrad);
 
+
 	double *ind, *temp_ftoe1, *bot;
 	requestmemory(&ind, boundarydge_Nfp, boundarydge_Ne);
 	requestmemory(&temp_ftoe1, boundarydge_Ne, boundarydge_Nfp);
 	requestmemory(&bot, Np, K);
+
 
 	/////////////////////////////////////////////////
 	for (int i = 0; i < *boundarydge_Nfp; i++)
@@ -53,6 +55,7 @@ abstractoutputfile("..//..//20191208.nc", 259200.0 / 500.0, 500)
 	{
 		fext_4[i] = bot[(int)ind[i]];
 	}
+
 	freememory(&ind);
 	freememory(&temp_ftoe1);
 	freememory(&bot);
@@ -96,6 +99,7 @@ abstractoutputfile("..//..//20191208.nc", 259200.0 / 500.0, 500)
 
 	data.close();
 
+
 }
 
 
@@ -133,7 +137,9 @@ void NdgPhysMat::matEvaluateSSPRK22()
 	while (time < ftime)
 	{
 		double dt = UpdateTimeInterval(fphys)*0.4;
+
 		cout << dt << endl;
+
 		if (time + dt > ftime) {
 			dt = ftime - time;
 		}
@@ -150,30 +156,9 @@ void NdgPhysMat::matEvaluateSSPRK22()
 
 			cblas_daxpy(num, dt, frhs, 1, fphys, 1);
 
-
 			EvaluateLimiter(fphys);
 
-			std::ofstream out("D:\\Desktop\\input.txt");
-			if (!out)
-			{
-				std::cerr << "open error!" << std::endl;
-			}
-
-			for (int j = 0; j < 433; j++) {
-
-				out << j + 1;
-				for (size_t i = 0; i < 100; i++)
-				{
-					out << "    " << tidal[j * 100 + i] << "\n";
-				}
-				out << "\n";
-
-			}
-			cout << "************************************************\n";
-
 			EvaluatePostFunc(fphys);//Update status
-
-
 
 			freememory(&frhs);
 		}
@@ -242,3 +227,23 @@ void NdgPhysMat::EvaluateLimiter(double *fphys)
 {
 	sweabstract2d.sweelevationlimiter2d.apply(fphys);
 };
+
+
+//signed char*status = meshunion->status;
+	//std::ofstream out("D:\\Desktop\\input.txt");
+	//if (!out)
+	//{
+	//	std::cerr << "open error!" << std::endl;
+	//}
+
+	////for (int j = 0; j < 433; j++) {
+
+	////	out << j + 1;
+	//for (size_t i = 0; i < (*K); i++)
+	//{
+	//	out << i << "    " << (int)status[i] << "\n";
+	//}
+	//out << "\n";
+
+	////}
+	//cout << "************************************************\n";

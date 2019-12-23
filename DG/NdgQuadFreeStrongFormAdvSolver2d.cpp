@@ -9,17 +9,17 @@ NdgQuadFreeStrongFormAdvSolver2d::~NdgQuadFreeStrongFormAdvSolver2d()
 {
 }
 
-void dotmul(const int num, double *const matrix1, double *matrix2)
+void dotmul(int num, double *const matrix1, double *matrix2)
 {
 
 	for (int i = 0; i < num; i++)
 	{
-		*(matrix2 + i) = (*(matrix1 + i))*(*(matrix2 + i));
+		matrix2[i] = matrix1[i] * matrix2[i];
 	}
 	return;
 }
 
-void multiply(double *const matrix1, double *const matrix2, double *const result)
+void multiply(double *const matrix1, double *const matrix2, double *result)
 {
 	const enum CBLAS_ORDER Order = CblasColMajor;
 	const enum CBLAS_TRANSPOSE TransA = CblasNoTrans;
@@ -114,17 +114,17 @@ void NdgQuadFreeStrongFormAdvSolver2d::evaluateAdvectionRHS(double *fphys, doubl
 
 	swepreblanaced2d.EvaluateFlux(fphys, E, G);
 
-	double *const Dr = meshunion->cell_p->Dr;
-	double *const Ds = meshunion->cell_p->Ds;
-	double *const rx = meshunion->rx;
-	double *const ry = meshunion->ry;
-	double *const sx = meshunion->sx;
-	double *const sy = meshunion->sy;
+	double * Dr = meshunion->cell_p->Dr;
+	double * Ds = meshunion->cell_p->Ds;
+	double * rx = meshunion->rx;
+	double * ry = meshunion->ry;
+	double * sx = meshunion->sx;
+	double * sy = meshunion->sy;
 
 	double *rx_dr_e, *sx_ds_e, *ry_dr_g, *sy_ds_g;
 
 	int dis = (*Np)*(*K);
-	double alpha_ = -1.0;
+	//double alpha_ = -1.0;
 	for (int i = 0; i < NVAR; i++)
 	{
 		requestmemory(&rx_dr_e, Np, K);

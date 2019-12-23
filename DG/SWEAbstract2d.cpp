@@ -86,5 +86,5 @@ void SWEAbstract2d::EvaluateSourceTerm(double *fphys, double *frhs, double *zGra
 
 	//sweprebalancevolumeflux2d.evaluate();
 	swetopographysourceterm2d.EvaluateTopographySourceTerm(gra, fphys, zGrad, frhs);
-
+	frictiontermsolver2d.evaluateFrictionTermRHS(gra, fphys, frhs);
 };

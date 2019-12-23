@@ -41,12 +41,11 @@ void evaluateNodalFlux(double hcrit, ///< water depth threshold
 	return;
 }
 
-
 void c_EvaluateFlux2d(double hmin_, double gra_, signed char *status_, double *fphys_, int *Np_, int *K_, double *E_, double *G_)
 {
 	double hcrit = hmin_;
 	double gra = gra_;
-	signed char *regType = (signed char *)status_;
+	signed char *regType = status_;
 	double *fphys = fphys_;
 
 	//const mwSize *dims = mxGetDimensions(prhs[3]);
@@ -54,7 +53,7 @@ void c_EvaluateFlux2d(double hmin_, double gra_, signed char *status_, double *f
 	const int Np = *Np_;
 	const int K = *K_;
 
-	const int ndimOut = 3;
+	//const int ndimOut = 3;
 	//const mwSize dimOut[3] = { Np, K, NVAR };
 	//plhs[0] = mxCreateNumericArray(ndimOut, dimOut, mxDOUBLE_CLASS, mxREAL);
 	//plhs[1] = mxCreateNumericArray(ndimOut, dimOut, mxDOUBLE_CLASS, mxREAL);
@@ -84,7 +83,7 @@ void c_EvaluateFlux2d(double hmin_, double gra_, signed char *status_, double *f
 		}
 
 		for (int n = 0; n < Np; n++) {
-			size_t sk = k * Np + n;
+			int sk = k * Np + n;
 			if (type == NdgRegionPartialWetFlood) {
 				evaluateNodalFlux(hcrit, 0.0, h[sk], hu[sk], hv[sk], z[sk], Eh + sk,
 					Ehu + sk, Ehv + sk, Gh + sk, Ghu + sk, Ghv + sk);

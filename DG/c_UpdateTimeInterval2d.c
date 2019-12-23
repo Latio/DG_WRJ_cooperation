@@ -1,6 +1,6 @@
 #include "SWE2d.h"
 #include <math.h>
-#include<stdint.h>
+//#include<stdint.h>
 #include<stdio.h>
 
 #ifdef _OPENMP
@@ -32,7 +32,7 @@ double c_UpdateTimeInterval2d(double hmin_, double gra_, int N_, double *dx_, si
 	double gra = gra_;
 	int N = N_;
 	double *dx = dx_;
-	signed char* regionType = (signed char*)status_;
+	signed char* regionType =status_;
 
 	PhysField fphys = convertMexToPhysFieldp(fphys_, Np_, K_, Nfield_);
 
