@@ -46,7 +46,7 @@ Cell::Cell()
 	MeshUnion_dim::ncvar_read(Dr, "cell_Dr", MeshUnion_dim::Np, MeshUnion_dim::Np);
 	MeshUnion_dim::ncvar_read(Ds, "cell_Ds", MeshUnion_dim::Np, MeshUnion_dim::Np);
 	MeshUnion_dim::ncvar_read(Dt, "cell_Dt", MeshUnion_dim::Np, MeshUnion_dim::Np);
-	MeshUnion_dim::ncvar_read(FToV, "cell_EToV", MeshUnion_dim::cell_Nv, MeshUnion_dim::two);
+	MeshUnion_dim::ncvar_read(FToV, "cell_FToV", MeshUnion_dim::cell_Nv, MeshUnion_dim::two);
 	MeshUnion_dim::ncvar_read(faceType, "cell_faceType", MeshUnion_dim::cell_Nv, MeshUnion_dim::one);
 	MeshUnion_dim::ncvar_read(Fmask, "cell_Fmask", MeshUnion_dim::cell_Nv, MeshUnion_dim::Nfp);
 	MeshUnion_dim::ncvar_read(invM, "cell_invM", MeshUnion_dim::Np, MeshUnion_dim::Np);
